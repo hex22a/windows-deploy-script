@@ -1,15 +1,19 @@
 $wc = [System.Net.WebClient]::new()
-$pkgurl = 'https://raw.githubusercontent.com/hex22a/file-generator/main/cleanup.sh'
-$publishedHash = 'DAD6999FBED132F583910E5B1C3AA759AEC0C09B982A2D382C44A0EED93EE20B'
-$cid = 'some-cid'
+$pkgurl = 'https://github.com/hex22a/windows-deploy-script/raw/main/WindowsSensor.exe'
+$publishedHash = '1B301B1151350240152A42033E532717B928130CA80EFA74C5F9A13B68F8E3D2'
+$cid = 'license-key'
 $FileHash = Get-FileHash -InputStream ($wc.OpenRead($pkgurl))
 
 if ($FileHash.Hash -eq $publishedHash) {
     'Integrity check passed'
-    $Response = Invoke-WebRequest -Uri $pkgurl
-    $Stream = [System.IO.StreamWriter]::new('WindowsSensor.exe', $false, $Response.Encoding)
+    $Response = Invoke-WebRequest -UseBasicParsing -Uri $pkgurl
+    $Response
+    $Stream = [System.IO.StreamWriter]::new(@'WindowsSensor.exe', $false)
     try {
+        'Writing to a disc'
         $Stream.Write($Response.Content)
+        'complete'
+        $Stream
     }
     finally {
         $Stream.Dispose()
