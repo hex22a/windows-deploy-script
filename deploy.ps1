@@ -7,21 +7,10 @@ $SensorLocal = 'C:\Temp\WindowsSensor.exe'
 
 if ($FileHash.Hash -eq $publishedHash) {
     'Integrity check passed'
-    $Response = Invoke-WebRequest -UseBasicParsing -Uri $pkgurl
-    $Response
     if (!(Test-Path -Path 'C:\Temp' -ErrorAction SilentlyContinue)) {
         New-Item -ItemType Directory -Path 'C:\Temp' -Force
     }
-    $Stream = [System.IO.StreamWriter]::new($SensorLocal, $false)
-    try {
-        'Writing to a disc'
-        $Stream.Write($Response.Content)
-        'complete'
-        $Stream
-    }
-    finally {
-        $Stream.Dispose()
-    }
+    Invoke-WebRequest -UseBasicParsing -Uri $pkgurl -OutFile $SensorLocal
     & $SensorLocal /install /quiet /norestart CID=$cid
 } else {
     'Integrity check failed'
